@@ -8,12 +8,12 @@ import (
 )
 
 type Client struct {
-	Config       config.Config
+	Config       *config.Config
 	consulClient *api.Client
 	serverTable  map[string][]discovery.Instance
 }
 
-func NewConsulClient(conf config.Config) discovery.Discovery {
+func NewConsulClient(conf *config.Config) discovery.Discovery {
 	// 创建consul客户端
 	c := api.DefaultConfig()
 	// 设置consul的地址
