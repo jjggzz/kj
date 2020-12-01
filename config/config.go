@@ -1,5 +1,13 @@
 package config
 
+import "flag"
+
+var ConfPath string
+
+func init() {
+	flag.StringVar(&ConfPath, "c", "./config.yml", "配置文件的地址")
+}
+
 type Server struct {
 	Ip  string `yaml:"ip"`
 	Tcp struct {
@@ -27,5 +35,6 @@ type DB struct {
 		Port     int    `yaml:"port"`
 		Username string `yaml:"username"`
 		Password string `yaml:"password"`
+		Schema   string `yaml:"schema"`
 	} `yaml:"mysql"`
 }
