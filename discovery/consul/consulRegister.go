@@ -23,12 +23,12 @@ func (c *Client) registerToConsul(server discovery.RpcServer) error {
 	serviceName := reflect.TypeOf(server).String()
 	// 配置注册到consul的服务的信息
 	registration := new(api.AgentServiceRegistration)
-	registration.ID = fmt.Sprintf("%s:%d", c.Config.Server.Ip, c.Config.Server.Tcp.Port)
+	registration.ID = fmt.Sprintf("%s:%d", c.ser.Ip, c.ser.Tcp.Port)
 	registration.Name = serviceName
-	registration.Port = c.Config.Server.Tcp.Port
-	registration.Address = c.Config.Server.Ip
+	registration.Port = c.ser.Tcp.Port
+	registration.Address = c.ser.Ip
 	c.healthCheck(registration)
-	log.Printf("开始注册服务[%s]到[%s]...", serviceName, c.Config.Discovery.Consul.Address)
+	log.Printf("开始注册服务[%s]到[%s]...", serviceName, c.dis.Consul.Address)
 	err := c.consulClient.Agent().ServiceRegister(registration)
 	if err != nil {
 		log.Printf("服务[%s]注册失败", serviceName)
@@ -42,9 +42,9 @@ func (c *Client) registerToConsul(server discovery.RpcServer) error {
 func (c *Client) healthCheck(registration *api.AgentServiceRegistration) {
 	check := new(api.AgentServiceCheck)
 	check.TCP = fmt.Sprintf("%s:%d", registration.Address, registration.Port)
-	check.Timeout = fmt.Sprintf("%ds", c.Config.Discovery.Consul.Health.Timeout)
-	check.Interval = fmt.Sprintf("%ds", c.Config.Discovery.Consul.Health.Interval)
+	check.Timeout = fmt.Sprintf("%ds", c.dis.Consul.Health.Timeout)
+	check.Interval = fmt.Sprintf("%ds", c.dis.Consul.Health.Interval)
 	// 故障检查失败30s后 consul自动将注册服务删除
-	check.DeregisterCriticalServiceAfter = fmt.Sprintf("%ds", c.Config.Discovery.Consul.Health.DeregisterCriticalServiceAfter)
+	check.DeregisterCriticalServiceAfter = fmt.Sprintf("%ds", c.dis.Consul.Health.DeregisterCriticalServiceAfter)
 	registration.Check = check
 }
