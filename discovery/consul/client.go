@@ -11,7 +11,7 @@ type Client struct {
 	ser          *config.Server
 	dis          *config.Discovery
 	consulClient *api.Client
-	serverTable  map[string][]discovery.Instance
+	serverTable  map[string][]string
 }
 
 func NewConsulClient(ser *config.Server, dis *config.Discovery) discovery.Discover {
@@ -24,5 +24,5 @@ func NewConsulClient(ser *config.Server, dis *config.Discovery) discovery.Discov
 		log.Printf("连接consul失败: %s", err)
 		panic(err)
 	}
-	return &Client{ser: ser, dis: dis, consulClient: client, serverTable: map[string][]discovery.Instance{}}
+	return &Client{ser: ser, dis: dis, consulClient: client, serverTable: map[string][]string{}}
 }
