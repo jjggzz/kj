@@ -14,7 +14,7 @@ type Client struct {
 	serverTable  map[string][]discovery.Instance
 }
 
-func NewConsulClient(ser *config.Server, dis *config.Discovery) discovery.Discovery {
+func NewConsulClient(ser *config.Server, dis *config.Discovery) discovery.Discover {
 	// 创建consul客户端
 	c := api.DefaultConfig()
 	// 设置consul的地址

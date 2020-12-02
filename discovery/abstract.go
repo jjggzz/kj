@@ -2,21 +2,16 @@ package discovery
 
 import "google.golang.org/grpc"
 
-// 服务注册的接口，所有服务都需继承此接口
-type RpcServer interface{}
-
-type Discovery interface {
+type Discover interface {
 	// 服务注册
-	RegisterService([]RpcServer) error
+	RegisterServer() error
 	// 服务发现
-	DiscoveryService([]RpcServer) error
+	DiscoveryServers([]string) error
 	// 获取服务的连接
-	GetConn(server RpcServer) (*grpc.ClientConn, error)
+	GetConn(string) (*grpc.ClientConn, error)
 }
 
 type Instance struct {
-	// 服务地址
 	Address string
-	// grpc的连接
-	Conn *grpc.ClientConn
+	Conn    *grpc.ClientConn
 }

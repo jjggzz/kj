@@ -1,7 +1,7 @@
 # 配置文件示例
 server:
-  ip: 192.168.1.102
-  tcp:
+  serverName: exampleServer
+  rpc:
     port: 6666
   http:
     port: 8080

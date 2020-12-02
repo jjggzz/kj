@@ -6,7 +6,6 @@ import (
 	"google.golang.org/grpc"
 	"log"
 	"math/rand"
-	"reflect"
 	"sync"
 	"time"
 )
@@ -15,9 +14,9 @@ var (
 	RWMutex sync.RWMutex
 )
 
-func (c *Client) DiscoveryService(servers []discovery.RpcServer) error {
-	for _, serv := range servers {
-		err := c.discoveryFromConsul(serv)
+func (c *Client) DiscoveryServers(serverNames []string) error {
+	for _, serverName := range serverNames {
+		err := c.discoveryFromConsul(serverName)
 		if err != nil {
 			return err
 		}
@@ -25,56 +24,56 @@ func (c *Client) DiscoveryService(servers []discovery.RpcServer) error {
 
 	// 异步函数执行服务刷新
 	go func() {
+		ticker := time.NewTicker(time.Second * 5)
 		for {
-			time.Sleep(time.Second * 5)
-			RWMutex.Lock()
-			c.updateServerList(servers)
-			RWMutex.Unlock()
+			select {
+			case <-ticker.C:
+				RWMutex.Lock()
+				c.updateServerList(serverNames)
+				RWMutex.Unlock()
+			}
 		}
 	}()
 
 	return nil
 }
 
-func (c *Client) GetConn(server discovery.RpcServer) (*grpc.ClientConn, error) {
-	serviceName := reflect.TypeOf(server).String()
+func (c *Client) GetConn(serverName string) (*grpc.ClientConn, error) {
 	// 在获取连接之前加上读锁，使其可以并发获取连接，而在异步更新服务列表时阻塞
 	RWMutex.RLock()
 	defer RWMutex.RUnlock()
 
-	instances := c.serverTable[serviceName]
+	instances := c.serverTable[serverName]
 	if len(instances) == 0 {
 		return nil, errors.New("没有此服务")
 	}
 	rand.Seed(time.Now().Unix())
 	node := rand.Int() % len(instances)
-	log.Printf("连接到服务[%s]的第[%d]节点:[%s]", serviceName, node, instances[node].Address)
+	log.Printf("访问服务[%s]的第[%d]节点:[%s]", serverName, node, instances[node].Address)
 	return instances[node].Conn, nil
 }
 
 // 服务发现
-func (c *Client) discoveryFromConsul(server discovery.RpcServer) error {
-	serviceName := reflect.TypeOf(server).String()
-	entity, _, err := c.consulClient.Health().Service(serviceName, "", true, nil)
+func (c *Client) discoveryFromConsul(serverName string) error {
+	entity, _, err := c.consulClient.Health().Service(serverName, "", true, nil)
 	if err != nil {
 		return err
 	}
 	for _, value := range entity {
 		conn, err := grpc.Dial(value.Service.ID, grpc.WithInsecure())
 		if err != nil {
-			log.Printf("连接[%s]服务的节点[%s]失败..", serviceName, value.Service.ID)
+			log.Printf("连接[%s]服务的节点[%s]失败..", serverName, value.Service.ID)
 		}
-		log.Printf("连接[%s]服务的节点[%s]成功..", serviceName, value.Service.ID)
+		log.Printf("连接[%s]服务的节点[%s]成功..", serverName, value.Service.ID)
 		instance := discovery.Instance{Address: value.Service.ID, Conn: conn}
-		c.serverTable[serviceName] = append(c.serverTable[serviceName], instance)
+		c.serverTable[serverName] = append(c.serverTable[serverName], instance)
 	}
 	return nil
 }
 
 // 更新服务列表
-func (c *Client) updateServerList(servers []discovery.RpcServer) {
-	for _, server := range servers {
-		serverName := reflect.TypeOf(server).String()
+func (c *Client) updateServerList(serverNames []string) {
+	for _, serverName := range serverNames {
 		entity, _, err := c.consulClient.Health().Service(serverName, "", true, nil)
 		if err != nil {
 			panic("异步更新服务列表失败")

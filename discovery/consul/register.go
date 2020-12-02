@@ -3,38 +3,26 @@ package consul
 import (
 	"fmt"
 	"github.com/hashicorp/consul/api"
-	"github.com/jjggzz/kj/discovery"
+	"github.com/jjggzz/kj/uitls"
 	"log"
-	"reflect"
 )
 
-func (c *Client) RegisterService(servers []discovery.RpcServer) error {
-	for _, server := range servers {
-		err := c.registerToConsul(server)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
 // 服务注册
-func (c *Client) registerToConsul(server discovery.RpcServer) error {
-	serviceName := reflect.TypeOf(server).String()
+func (c *Client) RegisterServer() error {
+	ipv4 := uitls.LocalIpv4()
 	// 配置注册到consul的服务的信息
 	registration := new(api.AgentServiceRegistration)
-	registration.ID = fmt.Sprintf("%s:%d", c.ser.Ip, c.ser.Tcp.Port)
-	registration.Name = serviceName
-	registration.Port = c.ser.Tcp.Port
-	registration.Address = c.ser.Ip
+	registration.ID = fmt.Sprintf("%s:%d", ipv4, c.ser.Rpc.Port)
+	registration.Name = c.ser.ServerName
+	registration.Port = c.ser.Rpc.Port
+	registration.Address = ipv4
 	c.healthCheck(registration)
-	log.Printf("开始注册服务[%s]到[%s]...", serviceName, c.dis.Consul.Address)
 	err := c.consulClient.Agent().ServiceRegister(registration)
 	if err != nil {
-		log.Printf("服务[%s]注册失败", serviceName)
-		panic(err)
+		log.Printf("服务[%s]注册到[%s]失败", c.ser.ServerName, c.dis.Consul.Address)
+		return err
 	}
-	log.Printf("服务[%s]注册成功", serviceName)
+	log.Printf("服务[%s]注册到[%s]成功", c.ser.ServerName, c.dis.Consul.Address)
 	return nil
 }
 
