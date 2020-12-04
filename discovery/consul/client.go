@@ -5,13 +5,15 @@ import (
 	"github.com/jjggzz/kj/config"
 	"github.com/jjggzz/kj/discovery"
 	"log"
+	"sync"
 )
 
 type Client struct {
 	ser          *config.Server
 	dis          *config.Discovery
 	consulClient *api.Client
-	serverTable  map[string][]string
+	rwMutex      sync.RWMutex
+	serverTable  map[string][]discovery.Instance
 }
 
 func NewConsulClient(ser *config.Server, dis *config.Discovery) discovery.Discover {
@@ -24,5 +26,5 @@ func NewConsulClient(ser *config.Server, dis *config.Discovery) discovery.Discov
 		log.Printf("连接consul失败: %s", err)
 		panic(err)
 	}
-	return &Client{ser: ser, dis: dis, consulClient: client, serverTable: map[string][]string{}}
+	return &Client{ser: ser, dis: dis, consulClient: client, serverTable: map[string][]discovery.Instance{}}
 }
