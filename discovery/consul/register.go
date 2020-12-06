@@ -12,9 +12,9 @@ func (c *Client) RegisterServer() error {
 	ipv4 := uitls.LocalIpv4()
 	// 配置注册到consul的服务的信息
 	registration := new(api.AgentServiceRegistration)
-	registration.ID = fmt.Sprintf("%s:%d", ipv4, c.ser.Rpc.Port)
+	registration.ID = fmt.Sprintf("%s:%d", ipv4, c.ser.Tcp.Port)
 	registration.Name = c.ser.ServerName
-	registration.Port = c.ser.Rpc.Port
+	registration.Port = c.ser.Tcp.Port
 	registration.Address = ipv4
 	c.healthCheck(registration)
 	err := c.consulClient.Agent().ServiceRegister(registration)
