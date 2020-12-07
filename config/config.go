@@ -10,9 +10,9 @@ func init() {
 
 type Server struct {
 	ServerName string `yaml:"serverName"`
-	Rpc        struct {
+	Tcp        struct {
 		Port int `yaml:"port"`
-	} `yaml:"rpc"`
+	} `yaml:"tcp"`
 	Http struct {
 		Port int `yaml:"port"`
 	} `yaml:"http"`
