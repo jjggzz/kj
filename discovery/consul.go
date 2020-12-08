@@ -15,26 +15,23 @@ type consul struct {
 	serverName string
 	port       int
 	logger     log.Logger
+	client     sdconsul.Client
 	r          sd.Registrar
 }
 
 func NewConsulDiscovery(address string, serverName string, port int, logger log.Logger) Discover {
-	return &consul{address: address, serverName: serverName, port: port, logger: logger}
+	consulCfg := api.DefaultConfig()
+	consulCfg.Address = address
+	consulClient, err := api.NewClient(consulCfg)
+	if err != nil {
+		_ = logger.Log("create consul client error:", err)
+		os.Exit(1)
+	}
+	client := sdconsul.NewClient(consulClient)
+	return &consul{address: address, serverName: serverName, port: port, logger: logger, client: client}
 }
 
 func (c *consul) RegisterServer() {
-	var client sdconsul.Client
-	{
-		consulCfg := api.DefaultConfig()
-		consulCfg.Address = c.address
-		consulClient, err := api.NewClient(consulCfg)
-		if err != nil {
-			_ = c.logger.Log("create consul client error:", err)
-			os.Exit(1)
-		}
-		client = sdconsul.NewClient(consulClient)
-	}
-
 	// 健康检测
 	check := api.AgentServiceCheck{
 		TCP:                            fmt.Sprintf("%s:%d", uitls.LocalIpv4(), c.port),
@@ -51,10 +48,15 @@ func (c *consul) RegisterServer() {
 		Port:    c.port,
 		Check:   &check,
 	}
-	c.r = sdconsul.NewRegistrar(client, &reg, c.logger)
+	c.r = sdconsul.NewRegistrar(c.client, &reg, c.logger)
 	c.r.Register()
 }
 
 func (c *consul) DeregisterServer() {
 	c.r.Deregister()
+}
+
+func (c *consul) Discovery(targetServerName string) (sd.Instancer, error) {
+	instancer := sdconsul.NewInstancer(c.client, c.logger, targetServerName, []string{}, true)
+	return instancer, nil
 }
