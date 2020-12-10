@@ -35,8 +35,8 @@ func (c *consul) RegisterServer() {
 	// 健康检测
 	check := api.AgentServiceCheck{
 		TCP:                            fmt.Sprintf("%s:%d", uitls.LocalIpv4(), c.port),
-		Interval:                       "10s",
-		Timeout:                        "1s",
+		Interval:                       "5s",
+		Timeout:                        "5s",
 		Notes:                          "Consul check service health status.",
 		DeregisterCriticalServiceAfter: "30s",
 	}
