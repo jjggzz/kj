@@ -29,6 +29,10 @@ type Discovery struct {
 	} `yaml:"consul"`
 }
 
+type Zipkin struct {
+	Address string `yaml:"address"`
+}
+
 type DB struct {
 	Mysql struct {
 		Host     string `yaml:"host"`
