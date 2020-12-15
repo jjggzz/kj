@@ -42,3 +42,10 @@ type DB struct {
 		Schema   string `yaml:"schema"`
 	} `yaml:"mysql"`
 }
+
+type Redis struct {
+	Address     string `yaml:"address"`
+	MaxIdle     int    `yaml:"maxIdle"`
+	MaxActive   int    `yaml:"maxActive"`
+	IdleTimeout int64  `yaml:"idleTimeout"`
+}
