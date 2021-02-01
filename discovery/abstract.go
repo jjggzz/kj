@@ -1,6 +1,6 @@
 package discovery
 
-import "github.com/go-kit/kit/sd"
+import "github.com/jjggzz/kit/sd"
 
 type Discover interface {
 	// 服务注册

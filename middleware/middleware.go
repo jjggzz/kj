@@ -2,10 +2,10 @@ package middleware
 
 import (
 	"context"
-	"github.com/go-kit/kit/circuitbreaker"
-	"github.com/go-kit/kit/endpoint"
-	"github.com/go-kit/kit/log"
-	"github.com/go-kit/kit/ratelimit"
+	"github.com/jjggzz/kit/circuitbreaker"
+	"github.com/jjggzz/kit/endpoint"
+	"github.com/jjggzz/kit/log"
+	"github.com/jjggzz/kit/ratelimit"
 	"github.com/sony/gobreaker"
 	"golang.org/x/time/rate"
 	"time"

@@ -27,6 +27,11 @@ type Discovery struct {
 			DeregisterCriticalServiceAfter int `yaml:"deregisterCriticalServiceAfter"`
 		} `yaml:"health"`
 	} `yaml:"consul"`
+	Nacos struct {
+		Address   string  `yaml:"address"`
+		Namespace string  `yaml:"namespace"`
+		Weight    float64 `yaml:"weight"`
+	} `yaml:"nacos"`
 }
 
 type Zipkin struct {

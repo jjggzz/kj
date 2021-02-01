@@ -1,11 +1,12 @@
-package discovery
+package consul
 
 import (
 	"fmt"
-	"github.com/go-kit/kit/log"
-	"github.com/go-kit/kit/sd"
-	sdconsul "github.com/go-kit/kit/sd/consul"
 	"github.com/hashicorp/consul/api"
+	"github.com/jjggzz/kit/log"
+	"github.com/jjggzz/kit/sd"
+	sdconsul "github.com/jjggzz/kit/sd/consul"
+	"github.com/jjggzz/kj/discovery"
 	"github.com/jjggzz/kj/uitls"
 	"os"
 )
@@ -19,7 +20,7 @@ type consul struct {
 	r          sd.Registrar
 }
 
-func NewConsulDiscovery(address string, serverName string, port int, logger log.Logger) Discover {
+func NewConsulDiscovery(address string, serverName string, port int, logger log.Logger) discovery.Discover {
 	consulCfg := api.DefaultConfig()
 	consulCfg.Address = address
 	consulClient, err := api.NewClient(consulCfg)

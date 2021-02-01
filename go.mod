@@ -5,11 +5,13 @@ go 1.15
 require (
 	github.com/armon/go-metrics v0.3.5 // indirect
 	github.com/fatih/color v1.10.0 // indirect
-	github.com/go-kit/kit v0.10.0
+	github.com/go-kit/kit v0.9.0
 	github.com/hashicorp/consul/api v1.8.0 // indirect
 	github.com/hashicorp/go-hclog v0.15.0 // indirect
 	github.com/hashicorp/go-immutable-radix v1.3.0 // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
+	github.com/jjggzz/kit v0.0.0-20210201092551-18f0be340396
 	github.com/mitchellh/mapstructure v1.4.0 // indirect
+	github.com/nacos-group/nacos-sdk-go v1.0.5 // indirect
 	golang.org/x/sys v0.0.0-20201207223542-d4d67f95c62d // indirect
 )
