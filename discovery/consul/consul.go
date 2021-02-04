@@ -7,7 +7,7 @@ import (
 	"github.com/jjggzz/kit/sd"
 	sdconsul "github.com/jjggzz/kit/sd/consul"
 	"github.com/jjggzz/kj/discovery"
-	"github.com/jjggzz/kj/uitls"
+	"github.com/jjggzz/kj/utils"
 	"os"
 )
 
@@ -35,7 +35,7 @@ func NewConsulDiscovery(address string, serverName string, port int, logger log.
 func (c *consul) RegisterServer() {
 	// 健康检测
 	check := api.AgentServiceCheck{
-		TCP:                            fmt.Sprintf("%s:%d", uitls.LocalIpv4(), c.port),
+		TCP:                            fmt.Sprintf("%s:%d", utils.LocalIpv4(), c.port),
 		Interval:                       "5s",
 		Timeout:                        "5s",
 		Notes:                          "Consul check service health status.",
@@ -43,9 +43,9 @@ func (c *consul) RegisterServer() {
 	}
 	// 服务名
 	reg := api.AgentServiceRegistration{
-		ID:      fmt.Sprintf("%s:%d", uitls.LocalIpv4(), c.port),
+		ID:      fmt.Sprintf("%s:%d", utils.LocalIpv4(), c.port),
 		Name:    c.serverName,
-		Address: uitls.LocalIpv4(),
+		Address: utils.LocalIpv4(),
 		Port:    c.port,
 		Check:   &check,
 	}

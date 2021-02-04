@@ -7,7 +7,7 @@ import (
 	"github.com/jjggzz/kit/sd"
 	sdnacos "github.com/jjggzz/kit/sd/nacos"
 	"github.com/jjggzz/kj/discovery"
-	"github.com/jjggzz/kj/uitls"
+	"github.com/jjggzz/kj/utils"
 	"github.com/nacos-group/nacos-sdk-go/clients"
 	"github.com/nacos-group/nacos-sdk-go/clients/naming_client"
 	"github.com/nacos-group/nacos-sdk-go/common/constant"
@@ -73,7 +73,7 @@ func NewNacosDiscovery(address string, serverName string, port int, namespace st
 
 func (n *nacos) RegisterServer() {
 	param := sdnacos.Param{
-		Ip:          uitls.LocalIpv4(),
+		Ip:          utils.LocalIpv4(),
 		Port:        uint64(n.port),
 		ServiceName: n.serverName,
 		Weight:      n.weight,
